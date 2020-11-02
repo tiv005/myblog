@@ -1,0 +1,40 @@
+在项目中配置redis缓存
+1.在pom.xml中配置redis的依赖
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+
+
+2.在application.properties中配置redis
+#配置redis
+spring.cache.type=redis  代表使用redis缓存
+spring.redis.host=192.168.1.103
+spring.redis.port=6379
+spring.cache.cache-names=yu  这是注解方法起得名字
+
+3.在主程序类上加上注解
+@SpringBootApplication
+@ServletComponentScan
+@EnableCaching //开启缓存
+public class MyblogApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyblogApplication.class, args);
+    }
+
+}
+
+4.在需要的方法上开启缓存，同时也要在该实体启动继承序列化
+@Cacheable(cacheNames = "yu",key = "#p0")  #p0 代表第一个形参
+public List<CategoryInfo> getCategoryList(CategoryInfo info) {
+    return categoryInfoMapper.getCategoryList();
+}
+
+5.实时更新缓存数据
+@CacheEvict(cacheNames = "yu",allEntries = true)
+
+
+6.redis json数据乱码解决方式（视频没讲，自己添加的方法）
+创建config包
+在config包下创建MyCacheConfig类和MyRedisConfig类
